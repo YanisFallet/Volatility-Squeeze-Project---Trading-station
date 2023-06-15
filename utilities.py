@@ -12,7 +12,3 @@ def get_stock_data(ticker="MC.PA"):
             df["Date"] = pd.to_datetime(df["Date"])
         return df.set_index("Date")
 
-def is_market_open_europe(date : datetime):
-    if date.weekday() >= 5 or date.time() < datetime.time(9,0) or date.time() > datetime.time(17,35):
-        return False
-    else : return True

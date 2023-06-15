@@ -7,6 +7,7 @@ class Widget_extra_charts(QWidget):
         super().__init__()
         
         self.container = QVBoxLayout()
+        self.container.setContentsMargins(0, 5, 0, 0)
         
         self.extra_chart = QChart()
         self.extra_chart.setTitle("Extra Chart")

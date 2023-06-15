@@ -1,10 +1,24 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollBar
 from PySide6.QtCharts import QChart, QChartView, QCandlestickSeries, QCandlestickSet
 from PySide6.QtCore import Qt, QDateTime
+from PySide6.QtGui import QWheelEvent
 
 import yfinance as yf
 from datetime import datetime
-from utilities import is_market_open_europe
+
+class MyChartView(QChartView):
+    def __init__(self, chart, parent=None):
+        super().__init__(chart, parent)
+        self.scrollbar = None  # Will be set from outside
+
+    def wheelEvent(self, event: QWheelEvent) -> None:
+        if self.scrollbar:
+            delta = event.angleDelta().y()
+            if delta > 0:  # Scrolled up
+                self.scrollbar.setValue(self.scrollbar.value() - 8)
+            elif delta < 0:  # Scrolled down
+                self.scrollbar.setValue(self.scrollbar.value() + 8)
+
 
 class Widget_candlestick_chart(QWidget):
     def __init__(self, ticker, mode, position, layout, max_candles=10):
@@ -22,13 +36,16 @@ class Widget_candlestick_chart(QWidget):
         self.chart.setTitle(f"{mode} Chart for {ticker}")
         self.chart.legend().hide()
         # self.chart.setAnimationOptions(QChart.SeriesAnimations)
+        
+        self.slider = QScrollBar(Qt.Horizontal)
+        self.slider.setMinimum(0)
 
-        self.chart_view = QChartView(self.chart)
+        self.chart_view = MyChartView(self.chart)
+        self.chart_view.scrollbar = self.slider
 
         self.container.addWidget(self.chart_view)
 
-        self.slider = QScrollBar(Qt.Horizontal)
-        self.slider.setMinimum(0)
+        
 
         # Connectez la barre de défilement au slot de mise à jour
         self.slider.valueChanged.connect(self.update_plot)
@@ -60,7 +77,7 @@ class Widget_candlestick_chart(QWidget):
 
         self.chart.addSeries(self.candelstick_series)
         self.chart.createDefaultAxes()
-    
+        
     def real_time_data(self):
         now = datetime.now()
         if is_market_open_europe(now):
@@ -69,6 +86,11 @@ class Widget_candlestick_chart(QWidget):
             pass
         else:
             return 
+
+def is_market_open_europe(date : datetime):
+    if date.weekday() >= 5 or date.time() < datetime.time(9,0) or date.time() > datetime.time(17,35):
+        return False
+    else : return True
         
     
         

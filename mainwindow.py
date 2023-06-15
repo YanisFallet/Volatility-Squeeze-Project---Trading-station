@@ -1,7 +1,5 @@
 from PySide6.QtWidgets import QMainWindow, QGridLayout, QWidget
 
-from functools import partial
-
 import utilities as ut
 from database_management.update_database import load_symbols
 
@@ -28,15 +26,32 @@ class MainWindow(QMainWindow):
         
         # Connexion des signaux et slots
         self.strategy_widget.strategy_button.clicked.connect(self.strategy_widget.activate_strategy)
+
         self.strategy_widget.list_widget.itemDoubleClicked.connect(self.strategy_widget.remove_tickers_from_qlist)
-        self.btn_database_widget.update_button.clicked.connect(self.btn_database_widget.update_database)
-        self.search_line.search_line.returnPressed.connect(lambda: self.on_ticker_selected(self.search_line.search_line.text()))
+
+        self.strategy_widget.list_widget.itemSelectionChanged.connect(
+            lambda: self.on_ticker_selected(self.strategy_widget.list_widget.currentItem().text())
+        )
         
         self.strategy_widget.search_bar_completer.activated.connect(self.strategy_widget.add_to_list)
-        self.strategy_widget.search_bar.returnPressed.connect(lambda: self.strategy_widget.add_to_list(self.strategy_widget.search_bar.text()))
+
+        self.strategy_widget.search_bar.returnPressed.connect(
+            lambda: self.strategy_widget.add_to_list(self.strategy_widget.search_bar.text())
+        )
+        
+        self.strategy_widget.table.itemSelectionChanged.connect(
+            lambda: self.on_ticker_selected(self.strategy_widget.table.selectedItems()[0].text())                                                        
+        )
+
+        self.btn_database_widget.update_button.clicked.connect(self.btn_database_widget.update_database)
+
+        self.search_line.search_line.returnPressed.connect(
+            lambda: self.on_ticker_selected(self.search_line.search_line.text())
+        )
+
+  
 
     def init_ui(self):
-        # Créer un widget central
         central_widget = QWidget()
         layout = QGridLayout(central_widget)
 
