@@ -2,7 +2,6 @@ from PySide6.QtWidgets import QMainWindow, QGridLayout, QWidget
 
 from functools import partial
 
-
 import utilities as ut
 from database_management.update_database import load_symbols
 
@@ -34,33 +33,31 @@ class MainWindow(QMainWindow):
         self.strategy_widget.search_bar_completer.activated.connect(self.strategy_widget.add_to_list)
         self.strategy_widget.search_bar.returnPressed.connect(lambda: self.strategy_widget.add_to_list(self.strategy_widget.search_bar.text()))
 
-        # self.chart_daily.slider.valueChanged.connect(partial(self.chart_daily.plot_data, self.data))
-        # self.chart_weekly.slider.valueChanged.connect(partial(self.chart_weekly.plot_data, ut.daily_to_weekly(self.data)))
-
     def init_ui(self):
         # Créer un widget central
         central_widget = QWidget()
         layout = QGridLayout(central_widget)
 
-        self.search_line = Widget_Search_Line(tickers =self.tickers, position = (0,0), layout=layout)
+        self.search_line = Widget_Search_Line(tickers=self.tickers, position=(0,0), layout=layout)
         
-        self.btn_database_widget  = Widget_btn_databases(tickers = self.tickers, position = (0,1),layout=layout)
+        self.btn_database_widget = Widget_btn_databases(tickers=self.tickers, position=(0,1), layout=layout)
         
-        self.chart_daily = Widget_candlestick_chart(ticker = "MC.PA", mode = "Daily", position = (1,0), layout=layout)
+        self.chart_daily = Widget_candlestick_chart(ticker="MC.PA", mode="Daily", position=(1,0), layout=layout)
         
-        self.chart_weekly = Widget_candlestick_chart(ticker = "MC.PA", mode = "Weekly", position = (2,0), layout=layout)
+        self.chart_weekly = Widget_candlestick_chart(ticker="MC.PA", mode="Weekly", position=(2,0), layout=layout)
         
-        self.strategy_widget = Widget_Strategy(tickers = self.tickers, position=(1,1), layout=layout)
+        self.strategy_widget = Widget_Strategy(tickers=self.tickers, position=(1,1), layout=layout)
         
-        self.extra_chart = Widget_extra_charts(position = (2,1),layout=layout)
+        self.extra_chart = Widget_extra_charts(position=(2,1), layout=layout)
 
         self.setCentralWidget(central_widget)
 
     def on_ticker_selected(self, ticker):
         self.data = ut.get_stock_data(ticker=ticker)
-        self.chart_daily.plot_data(self.data, start_index=self.data.shape[0] - 100)
+        self.chart_daily.plot_data(self.data)
         df_weekly = ut.daily_to_weekly(self.data)
-        self.chart_weekly.plot_data(df_weekly, start_index=df_weekly.shape[0] - 100)
+        self.chart_weekly.plot_data(df_weekly)
+
         
     
                     
