@@ -24,6 +24,8 @@ class MainWindow(QMainWindow):
 
         self.strategy_widget._load_watchlist()
         
+        self.on_ticker_selected("MC.PA")
+        
         # Connexion des signaux et slots
         self.strategy_widget.strategy_button.clicked.connect(self.strategy_widget.activate_strategy)
         self.strategy_widget.list_widget.itemDoubleClicked.connect(self.strategy_widget.remove_tickers_from_qlist)
@@ -53,6 +55,9 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
     def on_ticker_selected(self, ticker):
+        self.chart_daily.ticker = ticker
+        self.chart_weekly.ticker = ticker
+        
         self.data = ut.get_stock_data(ticker=ticker)
         self.chart_daily.plot_data(self.data)
         df_weekly = ut.daily_to_weekly(self.data)

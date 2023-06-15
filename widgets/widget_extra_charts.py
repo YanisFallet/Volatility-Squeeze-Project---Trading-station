@@ -1,5 +1,6 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QComboBox, QLineEdit, QHBoxLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QComboBox, QLineEdit, QHBoxLayout, QScrollBar
 from PySide6.QtCharts import QChart, QChartView, QLineSeries
+from PySide6.QtCore import Qt
 
 class Widget_extra_charts(QWidget):
     def __init__(self,position,layout):
@@ -26,15 +27,20 @@ class Widget_extra_charts(QWidget):
         self.last_row = QHBoxLayout()
         
         self.chart_type = QComboBox()
-        self.chart_type.addItems(["Line", "Candlestick"])
+        self.chart_type.addItems(["Line", "Candlestick", "Bar", "Area", "Spline", "Scatter"])
         
         self.qline_parameters = QLineEdit(self)
         
         self.last_row.addWidget(self.qline_parameters)
         self.last_row.addWidget(self.chart_type)
         
-        self.container.addWidget(self.extra_chart_view)
+        self.scrollbar = QScrollBar(Qt.Horizontal)
+        self.scrollbar.setMaximum(100)
+        self.scrollbar.setMinimum(0)
+        
         self.container.addLayout(self.last_row)
+        self.container.addWidget(self.extra_chart_view)
+        self.container.addWidget(self.scrollbar)
         
         layout.addLayout(self.container, position[0], position[1])
         

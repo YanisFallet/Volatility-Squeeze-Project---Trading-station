@@ -7,8 +7,11 @@ from datetime import datetime
 from utilities import is_market_open_europe
 
 class Widget_candlestick_chart(QWidget):
-    def __init__(self, ticker, mode, position, layout, max_candles=100):
+    def __init__(self, ticker, mode, position, layout, max_candles=10):
         super().__init__()
+        
+        self.ticker = ticker
+        self.mode = mode
 
         self.max_candles = max_candles
         self.data = None  # Pour stocker les données
@@ -37,8 +40,9 @@ class Widget_candlestick_chart(QWidget):
     def plot_data(self, data):
         # Sauvegardez les données pour une utilisation ultérieure
         self.data = data
+        self.chart.setTitle(f"{self.mode} Chart for {self.ticker}")
         self.slider.setMaximum(data.shape[0] - self.max_candles)
-        self.slider.setValue(data.shape[0] - self.max_candles)
+        self.slider.setValue(data.shape[0] - 5*self.max_candles)
         self.update_plot(self.slider.value())
 
     def update_plot(self, start_index):
@@ -48,7 +52,7 @@ class Widget_candlestick_chart(QWidget):
         self.candelstick_series.setDecreasingColor(Qt.red)
         self.candelstick_series.setIncreasingColor(Qt.green)
 
-        data_subframe = self.data.iloc[start_index:start_index+self.max_candles]
+        data_subframe = self.data.iloc[start_index:]
         for date, day_data in data_subframe.iterrows():
             candlestick_set = QCandlestickSet(day_data['Open'], day_data['High'], day_data['Low'], day_data['Close'],
                                               QDateTime(date).toSecsSinceEpoch())
